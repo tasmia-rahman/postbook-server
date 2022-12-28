@@ -120,6 +120,13 @@ async function run() {
             res.send(result);
         });
 
+        app.get('/comments/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { postId: id };
+            const comments = await commentsCollection.find(filter).toArray();
+            res.send(comments);
+        });
+
     }
     finally {
 
