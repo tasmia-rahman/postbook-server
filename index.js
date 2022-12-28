@@ -18,6 +18,7 @@ async function run() {
     try {
         const usersCollection = client.db('postbookDB').collection('users');
         const postsCollection = client.db('postbookDB').collection('posts');
+        const commentsCollection = client.db('postbookDB').collection('comments');
 
         //Users
         app.get('/users/:email', async (req, res) => {
@@ -109,6 +110,13 @@ async function run() {
             }
             const options = { upsert: true };
             const result = await postsCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        });
+
+        //Comments
+        app.post('/comments', async (req, res) => {
+            const commentInfo = req.body;
+            const result = await commentsCollection.insertOne(commentInfo);
             res.send(result);
         });
 
