@@ -1,6 +1,6 @@
 const express = require('express');
 var cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 
 const app = express();
@@ -37,6 +37,23 @@ async function run() {
                 const result = await usersCollection.insertOne(user);
                 res.send(result);
             }
+        });
+
+        app.put('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const user = req.body;
+            const updatedDoc = {
+                $set: {
+                    name: user.name,
+                    email: user.email,
+                    institution: user.institution,
+                    address: user.address
+                }
+            }
+            const options = { upsert: true };
+            const result = await usersCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
         });
     }
     finally {
