@@ -64,9 +64,51 @@ async function run() {
             res.send(posts);
         });
 
+        app.get('/posts/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const post = await postsCollection.findOne(filter);
+            res.send(post);
+        });
+
         app.post('/posts', async (req, res) => {
             const post = req.body;
             const result = await postsCollection.insertOne(post);
+            res.send(result);
+        });
+
+        app.get('/posts/love', async (req, res) => {
+            const query = {};
+            const posts = await postsCollection.find(query).toArray();
+            res.send(posts);
+        });
+
+        let count = 0;
+        app.put('/posts/addLove/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            count++;
+            const updatedDoc = {
+                $set: {
+                    loveCount: count
+                }
+            }
+            const options = { upsert: true };
+            const result = await postsCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        });
+
+        app.put('/posts/removeLove/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            count--;
+            const updatedDoc = {
+                $set: {
+                    loveCount: count
+                }
+            }
+            const options = { upsert: true };
+            const result = await postsCollection.updateOne(filter, updatedDoc, options);
             res.send(result);
         });
 
