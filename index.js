@@ -19,6 +19,13 @@ async function run() {
         const usersCollection = client.db('postbookDB').collection('users');
 
         //Users
+        app.get('/users/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+            res.send(user);
+        });
+
         app.post('/users', async (req, res) => {
             const user = req.body;
             const filter = { email: user.email };
