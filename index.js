@@ -16,7 +16,21 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
 
     try {
+        const usersCollection = client.db('postbookDB').collection('users');
 
+        //Users
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const filter = { email: user.email };
+            const existingUser = await usersCollection.findOne(filter);
+            if (existingUser) {
+                res.send({ message: 'User already exists' });
+            }
+            else {
+                const result = await usersCollection.insertOne(user);
+                res.send(result);
+            }
+        });
     }
     finally {
 
