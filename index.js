@@ -58,6 +58,12 @@ async function run() {
         });
 
         //Post
+        app.get('/posts', async (req, res) => {
+            const query = {};
+            const posts = await postsCollection.find(query).toArray();
+            res.send(posts);
+        });
+
         app.post('/posts', async (req, res) => {
             const post = req.body;
             const result = await postsCollection.insertOne(post);
