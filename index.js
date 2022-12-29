@@ -69,7 +69,6 @@ async function run() {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
             const post = await postsCollection.findOne(filter);
-            console.log(post?.loveCount);
             res.send(post);
         });
 
@@ -86,10 +85,11 @@ async function run() {
             res.send(posts);
         });
 
-        let count = 0;
         app.put('/posts/addLove/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
+            const post = await postsCollection.findOne(filter);
+            let count = post.loveCount;
             count++;
             const updatedDoc = {
                 $set: {
@@ -104,6 +104,8 @@ async function run() {
         app.put('/posts/removeLove/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
+            const post = await postsCollection.findOne(filter);
+            let count = post.loveCount;
             count--;
             const updatedDoc = {
                 $set: {
