@@ -79,12 +79,6 @@ async function run() {
             res.send(result);
         });
 
-        app.get('/posts/love', async (req, res) => {
-            const query = {};
-            const posts = await postsCollection.find(query).toArray();
-            res.send(posts);
-        });
-
         app.put('/posts/addLove/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
@@ -119,8 +113,7 @@ async function run() {
 
         //Top posts
         app.get('/topPosts', async (req, res) => {
-            const query = {};
-            const topPosts = await postsCollection.find(query).sort({ loveCount: -1 }).limit(1);
+            const topPosts = await postsCollection.find({}).sort({ loveCount: -1 }).limit(3).toArray();
             res.send(topPosts);
         });
 
