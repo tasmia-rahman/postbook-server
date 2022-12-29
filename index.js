@@ -58,7 +58,7 @@ async function run() {
             res.send(result);
         });
 
-        //Post
+        //Posts
         app.get('/posts', async (req, res) => {
             const query = {};
             const posts = await postsCollection.find(query).toArray();
@@ -69,11 +69,13 @@ async function run() {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
             const post = await postsCollection.findOne(filter);
+            console.log(post?.loveCount);
             res.send(post);
         });
 
         app.post('/posts', async (req, res) => {
             const post = req.body;
+            post.loveCount = 0;
             const result = await postsCollection.insertOne(post);
             res.send(result);
         });
@@ -113,6 +115,13 @@ async function run() {
             res.send(result);
         });
 
+        //Top posts
+        app.get('/topPosts', async (req, res) => {
+            const query = {};
+            const topPosts = await postsCollection.find(query).sort({ loveCount: -1 }).limit(1);
+            res.send(topPosts);
+        });
+
         //Comments
         app.post('/comments', async (req, res) => {
             const commentInfo = req.body;
@@ -125,6 +134,14 @@ async function run() {
             const filter = { postId: id };
             const comments = await commentsCollection.find(filter).toArray();
             res.send(comments);
+        });
+
+        //Details
+        app.get('/details/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const result = await postsCollection.findOne(filter);
+            res.send(result);
         });
 
     }
