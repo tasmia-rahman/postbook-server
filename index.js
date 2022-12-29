@@ -44,7 +44,7 @@ async function run() {
             const query = { email: email };
             const user = await usersCollection.findOne(query);
             if (user) {
-                const token = jwt.sign({ email }, `${process.env.ACCESS_TOKEN}`, { expiresIn: '1h' });
+                const token = jwt.sign({ email }, `${process.env.ACCESS_TOKEN_SECRET}`, { expiresIn: '1h' });
                 return res.send({ accessToken: token });
             }
             res.status(403).send({ accessToken: '' });
@@ -61,14 +61,13 @@ async function run() {
         app.post('/users', async (req, res) => {
             const user = req.body;
             const filter = { email: user.email };
-            const existingUser = await usersCollection.findOne(filter);
-            if (existingUser) {
-                res.send({ message: 'User already exists' });
+            const existingUser = await usersCollection.find(filter).toArray();
+            if (existingUser.length) {
+                const message = "User already exists!";
+                return res.send({ acknowledged: false, message });
             }
-            else {
-                const result = await usersCollection.insertOne(user);
-                res.send(result);
-            }
+            const result = await usersCollection.insertOne(user);
+            res.send(result);
         });
 
         app.put('/users/:id', async (req, res) => {
