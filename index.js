@@ -161,7 +161,7 @@ async function run() {
         });
 
         //Details
-        app.get('/details/:id', verifyJWT, async (req, res) => {
+        app.get('/details/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
             const result = await postsCollection.findOne(filter);
