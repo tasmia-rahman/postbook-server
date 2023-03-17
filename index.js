@@ -111,8 +111,14 @@ async function run() {
         app.put('/posts/addLove/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
+            const post = await postsCollection.findOne(filter);
+            let count = post.loveCount;
+            count++;
             const uid = req.body.uid;
             const updatedDoc = {
+                $set: {
+                    loveCount: count
+                },
                 $push: {
                     love: {
                         uid: uid
@@ -127,11 +133,36 @@ async function run() {
         app.put('/posts/removeLove/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
+            const post = await postsCollection.findOne(filter);
+            let count = post.loveCount;
+            count++;
             const uid = req.body.uid;
             const updatedDoc = {
+                $set: {
+                    loveCount: count
+                },
                 $pull: {
                     love: {
                         uid: uid
+                    }
+                }
+            }
+            const options = { upsert: true };
+            const result = await postsCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        });
+
+        app.put('/comments', async (req, res) => {
+            const commentInfo = req.body;
+            const { postId, commentedUserName, commentedUserEmail, commentedUserPhotoURL, comment } = commentInfo;
+            const filter = { _id: ObjectId(postId) };
+            const updatedDoc = {
+                $push: {
+                    comment: {
+                        commentedUserName: commentedUserName,
+                        commentedUserEmail: commentedUserEmail,
+                        commentedUserPhotoURL: commentedUserPhotoURL,
+                        comment: comment
                     }
                 }
             }
@@ -144,20 +175,6 @@ async function run() {
         app.get('/topPosts', async (req, res) => {
             const topPosts = await postsCollection.find({}).sort({ loveCount: -1 }).limit(3).toArray();
             res.send(topPosts);
-        });
-
-        //Comments
-        app.post('/comments', async (req, res) => {
-            const commentInfo = req.body;
-            const result = await commentsCollection.insertOne(commentInfo);
-            res.send(result);
-        });
-
-        app.get('/comments/:id', async (req, res) => {
-            const id = req.params.id;
-            const filter = { postId: id };
-            const comments = await commentsCollection.find(filter).toArray();
-            res.send(comments);
         });
 
         //Details
