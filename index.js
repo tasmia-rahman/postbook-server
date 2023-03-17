@@ -135,7 +135,7 @@ async function run() {
             const filter = { _id: ObjectId(id) };
             const post = await postsCollection.findOne(filter);
             let count = post.loveCount;
-            count++;
+            count--;
             const uid = req.body.uid;
             const updatedDoc = {
                 $set: {
