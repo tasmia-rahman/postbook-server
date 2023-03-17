@@ -111,12 +111,12 @@ async function run() {
         app.put('/posts/addLove/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
-            const post = await postsCollection.findOne(filter);
-            let count = post.loveCount;
-            count++;
+            const uid = req.body.uid;
             const updatedDoc = {
-                $set: {
-                    loveCount: count
+                $push: {
+                    love: {
+                        uid: uid
+                    }
                 }
             }
             const options = { upsert: true };
@@ -127,12 +127,12 @@ async function run() {
         app.put('/posts/removeLove/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
-            const post = await postsCollection.findOne(filter);
-            let count = post.loveCount;
-            count--;
+            const uid = req.body.uid;
             const updatedDoc = {
-                $set: {
-                    loveCount: count
+                $pull: {
+                    love: {
+                        uid: uid
+                    }
                 }
             }
             const options = { upsert: true };
